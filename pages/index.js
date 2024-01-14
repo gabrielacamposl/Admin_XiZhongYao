@@ -88,6 +88,7 @@ export default function Login() {
         // console.log(respuesta.data.username)
      //   localStorage.setItem('nombre', respuesta.data.username)
         localStorage.setItem('token', respuesta.data.token)
+        console.log(respuesta.data.token)
         setTimeout(() => { router.push('/pages/catalogos/productos') }, 1000)
       }
     } catch (error) {

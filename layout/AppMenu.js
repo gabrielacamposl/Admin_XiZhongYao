@@ -25,6 +25,12 @@ const AppMenu = () => {
       items: [
         { label: 'Validaciones de Médicos', icon: 'pi pi-fw pi-verified', to: '/pages/usuario/PerfilAdmin/medicosVal' },
       ]
+    },
+    {
+      label: 'New Functions',
+      items:[
+        {label: 'Productos', icon: 'pi pi-fw pi-shopping-bag', to: '/pages/Ecommerce/productos'}
+      ]
     }
   ];
 

@@ -21,26 +21,25 @@ import { Image } from 'cloudinary-react'
 //--> Funciones propias
 import { objetoVacio } from "@/components/catalogos/objetovacio";
 import { formatoPrecio } from "@/helpers/funciones";
-import { camposVacios, descripcionInvalida, descuendoInvalido, nombreInvalido } from "@/helpers/constantes/mensajes";
-import { listaTipos } from "@/components/catalogos/listas";
+import { camposVacios, descripcionInvalida, nombreInvalido } from "@/helpers/constantes/mensajes";
 import { consultarProductos, editarProducto, eliminarProducto, nuevoProducto } from "@/helpers/constantes/links";
-import { alfaNumericoEspacios, descuento } from "@/helpers/constantes/expresionesregulares";
-import { categoriaFlores, categoriaPeluches } from "@/helpers/dropproductos";
+import { alfaNumericoEspacios } from "@/helpers/constantes/expresionesregulares";
+import { categoriaPlantas } from "@/helpers/dropproductos";
+
 import Cargando from "@/components/loader/cargando";
 
 const CatalogoProductos = () => {
   // --> Estructura de objetos
   let productoVacio = objetoVacio
-  const listaCategoriasFlores = categoriaFlores
-  const listaCategoriasPeluches = categoriaPeluches
+  const listaCategoriasPlantas = categoriaPlantas
 
   // --> Validar cualquier string 
   const validarString = alfaNumericoEspacios
-  const validarDescuento = descuento
+
 
   //----------------| Lista de variables |----------------
   //--> Registros
-  const [product, setProduct] = useState(productoVacio);
+  const [ product, setProduct] = useState(productoVacio);
   const [products, setProducts] = useState(null);
   //--> Edicion
   const [nombreNuevo, setNombreNuevo] = useState('')
@@ -51,8 +50,6 @@ const CatalogoProductos = () => {
   //--> Estilos
   const [estiloNombre, setEstiloNombre] = useState('')
   const [estiloDescripcion, setEstiloDescripcion] = useState('')
-  const [estiloTP, setEstiloTP] = useState('')
-  const [estiloDescuento, setEstiloDescuento] = useState('')
   const [estiloCategoria, setEstiloCategoria] = useState('')
   //--> Otros
   const [editar, setEditar] = useState(false)
@@ -62,48 +59,58 @@ const CatalogoProductos = () => {
   const [cargando, setCargando] = useState(false)
   //--> Mensajes
   const [mensajeRespuesta, setMensajeRespuesta] = useState('')
+  //---> Eliminar Producto
+  const [nombreEliminar, setNombreEliminar] = useState('')
+  const [editarElProducto,setEditarElProducto] = useState('')
   //--> Especiales
   const toast = useRef(null);
   const dt = useRef(null);
 
   const [imagen1, setImagen1] = useState('')
-  const [imagen2, setImagen2] = useState('')
-  const [imagen3, setImagen3] = useState('')
 
-  const [imagenesEliminar, setImagenesEliminar] = useState('')
 
   //----------------| Interaccion con back-end |----------------
   //--> GET
+ 
   const obtenerProductos = async () => {
+    
     console.log("Obteniendo productos...")
+    const token = localStorage.getItem('token')
+    console.log(token)
+    const cabecera = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
     try {
-      const datos = await axios.get(consultarProductos)
-      // console.log(datos.data.products)
-      setProducts(datos.data.products)
+      
+      const datos = await axios.get(consultarProductos, cabecera)
+       console.log(datos.data.productos)
+      setProducts(datos.data.productos)
     } catch (error) { console.log(error) }
   }
 
   //--> POST
   const crearProducto = async (productoNuevo) => {
     //--> Arreglo de strings con las imagenes
-    let imagenes = [imagen1, imagen2, imagen3]
+    //let imagenes = [imagen1]
 
     //--> Agregar imagenes al objeto
     productoNuevo.imagenes = imagenes
     console.log("Creando producto...")
+    console.log(productoNuevo.imagenes)
     //--> Validar campos llenos
-    if (Object.values(productoNuevo).includes('') || [imagen1, imagen2, imagen3].includes('')) {
+    if (Object.values(productoNuevo).includes('') || [imagen1].includes('')) {
       if (!productoNuevo.nombreProducto) setEstiloNombre('p-invalid')
       if (!productoNuevo.descrProducto) setEstiloDescripcion('p-invalid')
-      if (!productoNuevo.tipoProducto) setEstiloTP('p-invalid')
       if (!productoNuevo.categoriaProducto) setEstiloCategoria('p-invalid')
+      
       setMensajeRespuesta(camposVacios)
       setTimeout(() => { setMensajeRespuesta('') }, 3000)
       return
     } else {
       setEstiloNombre('')
       setEstiloDescripcion('')
-      setEstiloTP('')
       setEstiloCategoria('')
     }
     //--> Validar Nombre
@@ -126,17 +133,6 @@ const CatalogoProductos = () => {
       setEstiloDescripcion('')
       setMensajeRespuesta('')
     }
-    //--> Validar descuento
-    if (!validarDescuento.test(productoNuevo.descuentoProducto)) {
-      setEstiloDescuento('p-invalid')
-      setMensajeRespuesta(descuendoInvalido)
-      setTimeout(() => { setMensajeRespuesta('') }, 3000)
-      return
-    } else {
-      setEstiloDescuento('')
-      setMensajeRespuesta('')
-    }
-
     //--> Preparar envio back-end
     const token = localStorage.getItem('token')
     const cabecera = {
@@ -154,8 +150,8 @@ const CatalogoProductos = () => {
       cerrarDialogoCM()
       setProduct(productoVacio)
     } catch (error) {
-      
-      setMensajeRespuesta("error")
+      console.log(error.response.data)
+      setMensajeRespuesta(error.response.data)
       setTimeout(() => { setMensajeRespuesta('') }, 3000);
     } finally {
       setCargando(false)
@@ -166,22 +162,12 @@ const CatalogoProductos = () => {
   const actualizarProducto = async (productoEditar) => {
     console.log("Actualizando...")
     //--> Arreglo de strings con las imagenes
-    let imagenes = [imagen1, imagen2, imagen3]
-    //--> Lista de imagenes a eliminar
-    let listaImagenesEliminar
-    if (imagenesEliminar) listaImagenesEliminar = imagenesEliminar.split(',')
-    else listaImagenesEliminar = []
-    // else console.log("No tiene imagenes a eliminar")
-    // console.log(imagenesEliminar)
-    // if (imagenesEliminar.length > 0) 
-    // let listaImagenesEliminar = imagenesEliminar.split(',')
+    let imagenes = [imagen1]
 
-    // console.log(productoEditar)
     //--> Validar campos llenos
     if (Object.values(productoEditar).includes('') || nombreNuevo === '') {
       if (!productoEditar.nombreProducto) setEstiloNombre('p-invalid')
       if (!productoEditar.descrProducto) setEstiloDescripcion('p-invalid')
-      if (!productoEditar.tipoProducto) setEstiloTP('p-invalid')
       if (!productoEditar.categoriaProducto) setEstiloCategoria('p-invalid')
       setMensajeRespuesta(camposVacios)
       setTimeout(() => { setMensajeRespuesta('') }, 3000)
@@ -189,7 +175,6 @@ const CatalogoProductos = () => {
     } else {
       setEstiloNombre('')
       setEstiloDescripcion('')
-      setEstiloTP('')
       setEstiloCategoria('')
     }
     //--> Validar Nombre
@@ -212,16 +197,7 @@ const CatalogoProductos = () => {
       setEstiloDescripcion('')
       setMensajeRespuesta('')
     }
-    //--> Validar descuento
-    if (!validarDescuento.test(productoEditar.descuentoProducto)) {
-      setEstiloDescuento('p-invalid')
-      setMensajeRespuesta(descuendoInvalido)
-      setTimeout(() => { setMensajeRespuesta('') }, 3000)
-      return
-    } else {
-      setEstiloDescuento('')
-      setMensajeRespuesta('')
-    }
+    
 
     //--> Preparar objeto para enviar
     const token = localStorage.getItem('token')
@@ -234,20 +210,18 @@ const CatalogoProductos = () => {
       nombreProducto: product.nombreProducto,
       nuevoNombre: nombreNuevo,
       descrProducto: product.descrProducto,
-      tipoProducto: product.tipoProducto,
       precioProducto: product.precioProducto,
-      descuentoProducto: product.descuentoProducto,
       cantidadInv: product.cantidadInv,
       categoriaProducto: product.categoriaProducto,
-      imagenesAdd: imagenes,
-      imagenesRem: listaImagenesEliminar
-      // imagenesRem: []
+      imagenProducto: imagenes,
+
     }
 
+    console.log(imagenes)
     //--> Mandar objeto al back-end
     try {
       setCargando(true)
-      const respuesta = await axios.post(editarProducto, objetoEnviar, cabecera)
+      const respuesta = await axios.put(editarProducto, objetoEnviar, cabecera)
       toast.current.show({
         severity: 'success', summary: `${respuesta.data.msg}`, life: 3000
       });
@@ -281,8 +255,10 @@ const CatalogoProductos = () => {
       }
     }
     //--> Mandar objeto a back-end
+    const newUrl = `${eliminarProducto}${nombreEliminar}`
+    console.log(newUrl)
     try {
-      const respuesta = await axios.post(eliminarProducto, objetoEliminar, cabecera)
+      const respuesta = await axios.delete(newUrl, cabecera)
       console.log(respuesta.data.msg)
       toast.current.show({
         severity: 'success', summary: `${respuesta.data.msg}`, life: 3000
@@ -317,13 +293,9 @@ const CatalogoProductos = () => {
     //--> Estilos
     setEstiloNombre('')
     setEstiloDescripcion('')
-    setEstiloDescuento('')
     setEstiloCategoria('')
-    setEstiloTP('')
     setImagen1('')
-    setImagen2('')
-    setImagen3('')
-    setImagenesEliminar('')
+
   };
 
   const cerrarDialogoCM = () => { setProductDialog(false) };
@@ -342,20 +314,21 @@ const CatalogoProductos = () => {
   };
 
   const editarRegistro = (product) => {
-    // console.log(product)
+
     setProduct({ ...product });
     setProductDialog(true);
-    //--> Campos adicionales
+
     setImagen1('')
-    setImagen2('')
-    setImagen3('')
-    setImagenesEliminar('')
+
   };
 
   const confirmarEliminarRegistro = (product) => {
+    console.log(product.nombreProducto)
+    setNombreEliminar(product.nombreProducto)
     setProduct(product);
     setDeleteProductDialog(true);
   };
+
 
   const exportCSV = () => { dt.current.exportCSV() }
 
@@ -405,18 +378,17 @@ const CatalogoProductos = () => {
   };
 
   //----------------| Plantillas |----------------
-  const plantillaImagen = (rowData) => {
+ const plantillaImagen = (rowData) => {
     return <Image
-      cloudName="dp6uo7fsz" publicId={rowData.imagenProducto[0]}
+      cloudName="dluhoni1n" publicId={rowData.imagenProducto}
       className="w-9 sm:w-16rem xl:w-10rem shadow-2 block xl:block mx-auto border-round"
       style={{ width: '50px', height: '80px' }}
     />
 
   };
 
+
   const plantillaPrecio = (rowData) => { return formatoPrecio(rowData.precioProducto) }
-  const plantillaDescuentoPrecio = (rowData) => { return formatoPrecio(rowData.precioDescuento) }
-  const plantillaPorcentaje = (rowData) => { return `${rowData.descuentoProducto} %` }
   const plantillaCantiddad = (rowData) => { return `${rowData.cantidadInv} piezas` }
 
   const ratingBodyTemplate = (rowData) => {
@@ -481,7 +453,6 @@ const CatalogoProductos = () => {
     <>
       <Button label="Sí" icon="pi pi-check" severity="success" onClick={quitarProducto} />
       <Button label="No" icon="pi pi-times" severity="danger" onClick={cerrarDialogoEliminarRegistro} />
-
     </>
   );
 
@@ -489,7 +460,6 @@ const CatalogoProductos = () => {
     <>
       <Button label="Sí" icon="pi pi-check" severity="success" onClick={deleteSelectedProducts} />
       <Button label="No" icon="pi pi-times" severity="danger" onClick={cerrarDialogoEliminarRegistros} />
-
     </>
   );
 
@@ -504,7 +474,6 @@ const CatalogoProductos = () => {
         <div className="col-12">
           <div className="card">
             <Toolbar className="mb-4" start={botonIzquierda} end={botonDerecha} />
-
             <DataTable
               ref={dt} value={products} selection={selectedProducts} onSelectionChange={(e) => setSelectedProducts(e.value)}
               paginator rows={10} rowsPerPageOptions={[5, 10, 25]} showGridlines
@@ -515,17 +484,12 @@ const CatalogoProductos = () => {
               <Column selectionMode="multiple" exportable={false} />
               <Column field="nombreProducto" header="Nombre" sortable style={{ minWidth: '12rem', textAlign: "center" }} />
               <Column field="descrProducto" header="Descripción" sortable style={{ minWidth: '12rem', textAlign: "center" }} />
-              <Column field="imagenProducto" header="Imagen" sortable style={{ minWidth: '12rem', textAlign: "center" }} body={plantillaImagen} />
-              <Column field="tipoProducto" header="Tipo" sortable style={{ minWidth: '12rem', textAlign: "center" }} />
+              <Column field="imagen1" header="Imagen" sortable style={{ minWidth: '12rem', textAlign: "center" }} body={plantillaImagen} />
               <Column field="precioProducto" header="Precio" body={plantillaPrecio}
                 sortable style={{ minWidth: '12rem', textAlign: "center" }} />
               <Column field="cantidadInv" header="Cantidad" sortable body={plantillaCantiddad}
                 style={{ minWidth: '12rem', textAlign: "center" }} />
               <Column field="categoriaProducto" header="Categoría" sortable style={{ minWidth: '12rem', textAlign: "center" }} />
-              <Column field="descuentoProducto" header="Descuento" sortable body={plantillaPorcentaje}
-                style={{ minWidth: '12rem', textAlign: "center" }} />
-              <Column field="precioDescuento" header="Precio de descuento" sortable body={plantillaDescuentoPrecio}
-                style={{ minWidth: '12rem', textAlign: "center" }} />
               <Column field="statusProducto" header="Estatus" sortable body={plantillaEstatus}
                 style={{ minWidth: '12rem', textAlign: "center" }} />
               <Column header="Editar" body={botonesAccion} exportable={false} style={{ minWidth: '12rem' }} />
@@ -538,7 +502,7 @@ const CatalogoProductos = () => {
             >
               {product.image && (
                 <img
-                  // src={`https://primefaces.org/cdn/primereact/images/product/${product.image}`}
+              
                   alt={product.image} className="product-image block m-auto pb-3" />
               )}
               {cargando && <Cargando />}
@@ -575,13 +539,6 @@ const CatalogoProductos = () => {
                         mode="currency" currency="USD" locale="en-US" min={0}
                       />
                     </div>
-                    <div className="field col">
-                      <label className="font-bold">Tipo de producto</label>
-                      <Dropdown
-                        value={product.tipoProducto} onChange={(e) => cambiarString(e, 'tipoProducto')}
-                        options={listaTipos} optionLabel="nombre" optionValue="valor"
-                        placeholder="Elija una categoría" className={`w-full md:w-14rem ${estiloTP}`} />
-                    </div>
                   </div>
 
                   <div className="formgrid grid">
@@ -592,36 +549,20 @@ const CatalogoProductos = () => {
                         suffix=" piezas" min={0}
                       />
                     </div>
-                    <div className="field col">
-                      <label htmlFor="descuento" className="font-bold">Descuento</label>
-                      <InputNumber
-                        id="descuento" value={product.descuentoProducto} onValueChange={(e) => cambiarNumero(e, 'descuentoProducto')}
-                        suffix=" %" min={0} className={estiloDescuento}
-                      />
-                    </div>
                   </div>
                   <div className="field">
                     <label className="font-bold">Categoría</label>
                     <Dropdown
                       value={product.categoriaProducto} onChange={(e) => cambiarString(e, 'categoriaProducto')}
-                      options={product.tipoProducto === 'Flor' ? listaCategoriasFlores : listaCategoriasPeluches}
+                      options={listaCategoriasPlantas}
                       optionLabel="categoria" optionValue="valor"
                       placeholder="Elija una categoría" className={`w-full ${estiloCategoria}`} />
                   </div>
 
                   <div className="field">
-                    <label htmlFor="imagenes" className="font-bold">Imágenes</label>
+                    <label htmlFor="imagenes" className="font-bold">Imagen del Producto</label>
                     <InputText placeholder="Imagen 1" value={imagen1} onChange={(e) => setImagen1(e.target.value)} />
-                    <InputText placeholder="Imagen 2" value={imagen2} onChange={(e) => setImagen2(e.target.value)} />
-                    <InputText placeholder="Imagen 3" value={imagen3} onChange={(e) => setImagen3(e.target.value)} />
                   </div>
-                  {product._id && (
-                    <div className="field">
-                      <label htmlFor="eliminar" className="font-bold">Imagenes a eliminar</label>
-                      <InputText value={imagenesEliminar} onChange={(e) => setImagenesEliminar(e.target.value)} />
-                    </div>
-                  )}
-
                   {mensajeRespuesta && (
                     <div className="mt-4">
                       <Message severity="error" text={mensajeRespuesta} />

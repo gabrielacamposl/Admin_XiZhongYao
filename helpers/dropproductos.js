@@ -1,3 +1,11 @@
+
+
+export const categoriaPlantas = [
+  { categoria: 'Relajantes', valor: 'Relajantes' },
+  { categoria: 'Aromáticas', valor: 'Aromáticas' },
+  { categoria: 'Tranquilizantes', valor: 'Tranquilizantes' },
+
+]
 export const categoriaFlores = [
   { categoria: 'Amor & Aniversario', valor: 'Amor & Aniversario' },
   { categoria: 'Boda', valor: 'Boda' },
