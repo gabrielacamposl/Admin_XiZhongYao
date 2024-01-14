@@ -28,3 +28,4 @@ export const consultarPedidosCancelados = "http://localhost:4444/api/administrad
 //---> Validación de médicos
 
 export const validarDoctores = "http://localhost:4444/api/doctores/aceptarDoctor"
+export const mostrarDoctores = "http://localhost:4444/api/doctores/confirmar/"

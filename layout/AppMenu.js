@@ -9,29 +9,24 @@ const AppMenu = () => {
     {
       label: 'Modificación de Datos',
       items: [
-        { label: 'Productos', icon: 'pi pi-fw pi-database', to: '/pages/catalogos/productos' },
+        { label: 'Productos', icon: 'pi pi-fw pi-database', to: '/pages/Ecommerce/productos' },
 
       ]
     },
     {
       label: 'Visualización de Registros',
       items: [
-        { label: 'Ordenes', icon: 'pi pi-fw pi-truck', to: '/pages/usuario/ordenes' },
-        { label: 'Cancelaciones', icon: 'pi pi-fw pi-times-circle', to: '/pages/usuario/cancelaciones' },
+        { label: 'Ordenes', icon: 'pi pi-fw pi-truck', to: '/pages/Ecommerce/verPedidos' },
+       // { label: 'Cancelaciones', icon: 'pi pi-fw pi-times-circle', to: '/pages/usuario/cancelaciones' },
       ]
     },
     {
       label: 'Médicos',
       items: [
-        { label: 'Validaciones de Médicos', icon: 'pi pi-fw pi-verified', to: '/pages/usuario/PerfilAdmin/medicosVal' },
+        { label: 'Validaciones de Médicos', icon: 'pi pi-fw pi-verified', to: '/pages/usuario/PerfilAdmin/validarMedicos_' },
       ]
     },
-    {
-      label: 'New Functions',
-      items:[
-        {label: 'Productos', icon: 'pi pi-fw pi-shopping-bag', to: '/pages/Ecommerce/productos'}
-      ]
-    }
+    
   ];
 
   return (

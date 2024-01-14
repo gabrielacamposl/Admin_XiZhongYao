@@ -39,7 +39,7 @@ const CatalogoProductos = () => {
 
   //----------------| Lista de variables |----------------
   //--> Registros
-  const [ product, setProduct] = useState(productoVacio);
+  const [product, setProduct] = useState(productoVacio);
   const [products, setProducts] = useState(null);
   //--> Edicion
   const [nombreNuevo, setNombreNuevo] = useState('')
@@ -61,7 +61,7 @@ const CatalogoProductos = () => {
   const [mensajeRespuesta, setMensajeRespuesta] = useState('')
   //---> Eliminar Producto
   const [nombreEliminar, setNombreEliminar] = useState('')
-  const [editarElProducto,setEditarElProducto] = useState('')
+  const [editarElProducto, setEditarElProducto] = useState('')
   //--> Especiales
   const toast = useRef(null);
   const dt = useRef(null);
@@ -71,40 +71,35 @@ const CatalogoProductos = () => {
 
   //----------------| Interaccion con back-end |----------------
   //--> GET
- 
+
   const obtenerProductos = async () => {
-    
-    console.log("Obteniendo productos...")
+
+    // console.log("Obteniendo productos...")
     const token = localStorage.getItem('token')
-    console.log(token)
-    const cabecera = {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
+    // console.log(token)
+    const cabecera = {headers: {Authorization: `Bearer ${token}`}}
     try {
-      
+
       const datos = await axios.get(consultarProductos, cabecera)
-       console.log(datos.data.productos)
+      console.log(datos.data.productos)
       setProducts(datos.data.productos)
     } catch (error) { console.log(error) }
   }
 
   //--> POST
   const crearProducto = async (productoNuevo) => {
-    //--> Arreglo de strings con las imagenes
-    //let imagenes = [imagen1]
 
-    //--> Agregar imagenes al objeto
-    productoNuevo.imagenes = imagenes
     console.log("Creando producto...")
-    console.log(productoNuevo.imagenes)
+    console.log(imagen1);
+    console.log(productoNuevo)
+
     //--> Validar campos llenos
-    if (Object.values(productoNuevo).includes('') || [imagen1].includes('')) {
+    if (Object.values(productoNuevo).includes('')) {
       if (!productoNuevo.nombreProducto) setEstiloNombre('p-invalid')
       if (!productoNuevo.descrProducto) setEstiloDescripcion('p-invalid')
       if (!productoNuevo.categoriaProducto) setEstiloCategoria('p-invalid')
-      
+      if (!productoNuevo.imagen1) setImagen1('p-invalid')
+
       setMensajeRespuesta(camposVacios)
       setTimeout(() => { setMensajeRespuesta('') }, 3000)
       return
@@ -112,6 +107,7 @@ const CatalogoProductos = () => {
       setEstiloNombre('')
       setEstiloDescripcion('')
       setEstiloCategoria('')
+      setImagen1('')
     }
     //--> Validar Nombre
     if (!validarString.test(productoNuevo.nombreProducto)) {
@@ -161,14 +157,15 @@ const CatalogoProductos = () => {
   //--> PUT
   const actualizarProducto = async (productoEditar) => {
     console.log("Actualizando...")
-    //--> Arreglo de strings con las imagenes
-    let imagenes = [imagen1]
+    console.log(imagen1); 
+    setEditarElProducto(product.nombreProducto)
 
     //--> Validar campos llenos
-    if (Object.values(productoEditar).includes('') || nombreNuevo === '') {
+    if (Object.values(productoEditar).includes('') ) {
       if (!productoEditar.nombreProducto) setEstiloNombre('p-invalid')
       if (!productoEditar.descrProducto) setEstiloDescripcion('p-invalid')
       if (!productoEditar.categoriaProducto) setEstiloCategoria('p-invalid')
+      if (!productoEditar.imagen1) setImagen1('p-invalid')
       setMensajeRespuesta(camposVacios)
       setTimeout(() => { setMensajeRespuesta('') }, 3000)
       return
@@ -176,7 +173,8 @@ const CatalogoProductos = () => {
       setEstiloNombre('')
       setEstiloDescripcion('')
       setEstiloCategoria('')
-    }
+      setImagen1('')
+    } 
     //--> Validar Nombre
     if (!validarString.test(productoEditar.nombreProducto)) {
       setEstiloNombre('p-invalid')
@@ -197,7 +195,7 @@ const CatalogoProductos = () => {
       setEstiloDescripcion('')
       setMensajeRespuesta('')
     }
-    
+
 
     //--> Preparar objeto para enviar
     const token = localStorage.getItem('token')
@@ -213,15 +211,16 @@ const CatalogoProductos = () => {
       precioProducto: product.precioProducto,
       cantidadInv: product.cantidadInv,
       categoriaProducto: product.categoriaProducto,
-      imagenProducto: imagenes,
-
+      imagenProducto: product.imagen1,
     }
 
-    console.log(imagenes)
+    const newUrlEditar = `${editarProducto}${editarElProducto}`
+    console.log('Esta es la newURLEditar')
+    console.log(newUrlEditar)
     //--> Mandar objeto al back-end
     try {
       setCargando(true)
-      const respuesta = await axios.put(editarProducto, objetoEnviar, cabecera)
+      const respuesta = await axios.put(newUrlEditar, objetoEnviar, cabecera)
       toast.current.show({
         severity: 'success', summary: `${respuesta.data.msg}`, life: 3000
       });
@@ -241,6 +240,14 @@ const CatalogoProductos = () => {
       setCargando(false)
     }
   }
+
+  //--> Ruta de la imagen seleccionada
+  const handleImage = (e) => {
+    const selectedImage = e.target.files[0];
+    // --> Concatenar archivo y ruta
+    setImagen1(`C:/Users/gabri/Downloads/${selectedImage.name}`)
+    product.imagenProducto = `C:/Users/gabri/Downloads/${selectedImage.name}`
+};
 
   //--> DELETE
   const quitarProducto = async () => {
@@ -288,14 +295,13 @@ const CatalogoProductos = () => {
   //----------------| Interaccion con dialogos |----------------
   const abrirDialogoCM = () => {
     setProduct(productoVacio);
-    setNombreNuevo('')
+   // setNombreNuevo('')
     setProductDialog(true);
     //--> Estilos
     setEstiloNombre('')
     setEstiloDescripcion('')
     setEstiloCategoria('')
     setImagen1('')
-
   };
 
   const cerrarDialogoCM = () => { setProductDialog(false) };
@@ -366,6 +372,10 @@ const CatalogoProductos = () => {
   const cambiarString = (e, name) => {
     const val = (e.target && e.target.value) || '';
     let _product = { ...product };
+    // Update the 'imagen1' state
+    if (name === 'imagen1') {
+      setImagen1(val);
+    }
     _product[`${name}`] = val;
     setProduct(_product);
   };
@@ -378,7 +388,7 @@ const CatalogoProductos = () => {
   };
 
   //----------------| Plantillas |----------------
- const plantillaImagen = (rowData) => {
+  const plantillaImagen = (rowData) => {
     return <Image
       cloudName="dluhoni1n" publicId={rowData.imagenProducto}
       className="w-9 sm:w-16rem xl:w-10rem shadow-2 block xl:block mx-auto border-round"
@@ -391,9 +401,9 @@ const CatalogoProductos = () => {
   const plantillaPrecio = (rowData) => { return formatoPrecio(rowData.precioProducto) }
   const plantillaCantiddad = (rowData) => { return `${rowData.cantidadInv} piezas` }
 
-  const ratingBodyTemplate = (rowData) => {
-    return <Rating value={rowData.rating} readOnly cancel={false} />;
-  };
+  // const ratingBodyTemplate = (rowData) => {
+  //   return <Rating value={rowData.rating} readOnly cancel={false} />;
+  // };
 
   const plantillaEstatus = (rowData) => {
     return <Tag value={rowData.statusProducto} severity={getSeverity(rowData)}></Tag>;
@@ -466,8 +476,8 @@ const CatalogoProductos = () => {
   //----------------| Valor que regresara |----------------
   return (
     <Layout
-      title="Flores"
-      description="Acceso al catálogo de flores"
+      title="Productos"
+      description="Acceso al catálogo de plantas medicinales"
     >
       <div className="grid">
         <Toast ref={toast} />
@@ -502,7 +512,7 @@ const CatalogoProductos = () => {
             >
               {product.image && (
                 <img
-              
+
                   alt={product.image} className="product-image block m-auto pb-3" />
               )}
               {cargando && <Cargando />}
@@ -515,7 +525,7 @@ const CatalogoProductos = () => {
                       required autoFocus className={estiloNombre}
                     />
                   </div>
-                  {editar && (
+                  {/* {editar && (
                     <div className="field">
                       <label htmlFor="nombre" className="font-bold">Nuevo nombre</label>
                       <InputText
@@ -523,7 +533,7 @@ const CatalogoProductos = () => {
                         required autoFocus className={classNames({ 'p-invalid': submitted && !product.nombreProducto })}
                       />
                     </div>
-                  )}
+                  )} */}
                   <div className="field">
                     <label htmlFor="descripcion" className="font-bold">Descripción</label>
                     <InputText
@@ -561,7 +571,15 @@ const CatalogoProductos = () => {
 
                   <div className="field">
                     <label htmlFor="imagenes" className="font-bold">Imagen del Producto</label>
-                    <InputText placeholder="Imagen 1" value={imagen1} onChange={(e) => setImagen1(e.target.value)} />
+                    {/* <InputText placeholder="Imagen 1" value={imagen1} onChange={(e) => setImagen1(e.target.value)} /> */}
+                    <InputText
+                        type="file"
+                        id="imagen1"
+                        placeholder='Imagen'
+                        accept="image/png, image/jpeg, image/jpg"
+                        onChange={handleImage}
+                        className= "w-full p-3 md:w-25rem "
+                    />
                   </div>
                   {mensajeRespuesta && (
                     <div className="mt-4">

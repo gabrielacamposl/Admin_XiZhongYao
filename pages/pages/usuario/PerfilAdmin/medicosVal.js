@@ -7,7 +7,9 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Toast } from 'primereact/toast';
 import axios from "axios";
-import { validarDoctores } from "@/helpers/constantes/links"; // Reemplaza con el enlace correcto para validar doctores
+import { mostrarDoctores, validarDoctores } from "@/helpers/constantes/links"; // Reemplaza con el enlace correcto para validar doctores
+import { Worker, Viewer } from '@react-pdf-viewer/core';
+import '@react-pdf-viewer/core/lib/styles/index.css';
 
 const Doctores = () => {
   const [doctores, setDoctores] = useState(null);
@@ -15,6 +17,7 @@ const Doctores = () => {
   const [globalFilter, setGlobalFilter] = useState('');
   const [displayDialog, setDisplayDialog] = useState(false);
   const [mensajeRespuesta, setMensajeRespuesta] = useState('');
+  const [validacionExitosa, setValidacionExitosa] = useState(null); // Nuevo estado para almacenar el resultado de la validación
 
   const toast = useRef(null);
 
@@ -26,8 +29,8 @@ const Doctores = () => {
       }
     };
     try {
-      const respuesta = await axios.get(validarDoctores, cabecera);
-      setDoctores(respuesta.data.doctores);
+      const respuesta = await axios.get(mostrarDoctores, cabecera);
+      setDoctores(respuesta.data.doctor);
     } catch (error) {
       console.error(error);
     }
@@ -37,9 +40,29 @@ const Doctores = () => {
     consultarDoctores();
   }, []);
 
+  const enviarResultadoValidacion = async (resultado) => {
+   
+    try {
+      const token = localStorage.getItem('token');
+      const cabecera = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      };
+      const body = {
+        resultado: resultado
+      };
+      // Reemplaza 'URL_DEL_SERVICIO' con la URL correcta para realizar el POST.
+      await axios.post(validarDoctores, body, cabecera);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const validarCuenta = () => {
     // Lógica para validar la cuenta del doctor
     // Puedes implementar la lógica aquí y mostrar un mensaje de éxito o error.
+    setValidacionExitosa(true);
     setDisplayDialog(false);
     toast.current.show({
       severity: 'success',
@@ -52,6 +75,7 @@ const Doctores = () => {
   const cancelarCuenta = () => {
     // Lógica para cancelar la cuenta del doctor
     // Puedes implementar la lógica aquí y mostrar un mensaje de éxito o error.
+    setValidacionExitosa(false);
     setDisplayDialog(false);
     toast.current.show({
       severity: 'warn',
@@ -102,6 +126,12 @@ const Doctores = () => {
       />
     </>
   );
+
+  useEffect(() => {
+    if (validacionExitosa !== null) {
+      enviarResultadoValidacion(validacionExitosa);
+    }
+  }, [validacionExitosa]);
 
   return (
     <Layout

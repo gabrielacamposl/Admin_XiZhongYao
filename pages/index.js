@@ -89,7 +89,7 @@ export default function Login() {
      //   localStorage.setItem('nombre', respuesta.data.username)
         localStorage.setItem('token', respuesta.data.token)
         console.log(respuesta.data.token)
-        setTimeout(() => { router.push('/pages/catalogos/productos') }, 1000)
+        setTimeout(() => { router.push('/pages/Ecommerce/productos') }, 1000)
       }
     } catch (error) {
    //   setMensajeRespuesta(error.response.data.msg)
