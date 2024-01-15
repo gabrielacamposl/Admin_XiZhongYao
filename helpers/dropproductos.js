@@ -1,9 +1,13 @@
 
 
 export const categoriaPlantas = [
-  { categoria: 'Relajantes', valor: 'Relajantes' },
+  { categoria: 'Relajantes', valor: 'Relajantes' }, 
   { categoria: 'Aromáticas', valor: 'Aromáticas' },
-  { categoria: 'Tranquilizantes', valor: 'Tranquilizantes' },
+  { categoria: 'Aceites', valor: 'Aceites' },
+  { categoria: 'Ungüentos', valor: 'Ungüentos' },
+  { categoria: 'Flores Frescas', valor: 'Flores Frescas' },
+  { categoria: 'Homeopatía', valor: 'Homeopatía' },
+
 
 ]
 export const categoriaFlores = [

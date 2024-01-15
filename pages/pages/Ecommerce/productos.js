@@ -120,7 +120,7 @@ const CatalogoProductos = () => {
       setMensajeRespuesta('')
     }
     //--> Validar descripción
-    if (!validarString.test(productoNuevo.descrProducto)) {
+   /* if (!validarString.test(productoNuevo.descrProducto)) {
       setEstiloDescripcion('p-invalid')
       setMensajeRespuesta(descripcionInvalida)
       setTimeout(() => { setMensajeRespuesta('') }, 3000)
@@ -128,7 +128,7 @@ const CatalogoProductos = () => {
     } else {
       setEstiloDescripcion('')
       setMensajeRespuesta('')
-    }
+    }*/
     //--> Preparar envio back-end
     const token = localStorage.getItem('token')
     const cabecera = {
@@ -433,7 +433,7 @@ const CatalogoProductos = () => {
     return (
       <div className="flex flex-wrap gap-2">
         <Button label="Nuevo" icon="pi pi-plus" severity="success" onClick={abrirDialogoCM} />
-        <Button label="Eliminar" icon="pi pi-trash" severity="danger" onClick={confirmDeleteSelected} disabled={!selectedProducts || !selectedProducts.length} />
+        {/* <Button label="Eliminar" icon="pi pi-trash" severity="danger" onClick={confirmDeleteSelected} disabled={!selectedProducts || !selectedProducts.length} /> */}
       </div>
     );
   };
@@ -445,8 +445,8 @@ const CatalogoProductos = () => {
   const botonesAccion = (rowData) => {
     return (
       <>
-        <Button icon="pi pi-pencil" rounded severity="warning" className="mr-2" onClick={() => editarRegistro(rowData)} />
-        <Button icon="pi pi-trash" rounded severity="danger" onClick={() => confirmarEliminarRegistro(rowData)} />
+        {/* <Button icon="pi pi-pencil" rounded severity="warning" className="mr-2" onClick={() => editarRegistro(rowData)} /> */}
+        <Button icon="pi pi-trash" label="Eliminar" severity="danger" onClick={() => confirmarEliminarRegistro(rowData)} />
       </>
     );
   };

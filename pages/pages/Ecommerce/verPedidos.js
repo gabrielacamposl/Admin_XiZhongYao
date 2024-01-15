@@ -50,7 +50,7 @@ const Devoluciones = () => {
   const [pedidoStatus, setPedidoStatus] = useState('');
   const [estatusOptions, setEstatusOptions] = useState([
     { label: 'Pendiente', value: 'Pendiente' },
-    { label: 'Entregada', value: 'Entregada' },
+    { label: 'Entregado', value: 'Entregado' },
   ]);
 
   //--> Especiales
@@ -61,24 +61,26 @@ const Devoluciones = () => {
   useEffect(() => {
     const datos = [
       {
-        idPedido: 153,
+        idPedido: 155,
         fecha: '14-01-2024',
+        nombrePaciente: "Miguel Campos Luna",
         detalles: {
           producto1: {
-            nombre: 'Crema de Naranja',
-            cantidad: 2
+            nombre: 'Concha Nacar',
+            cantidad: 3
           },
           producto2: {
-            nombre: 'Concha Nacar',
-            cantidad: 1
+            nombre: 'Crema de Naranja ',
+            cantidad: 2
           }
         },
-        total: 185,
-        estado: 'Pendiente'
+        total: 249.50,
+        estado: 'Entregado'
       },
       {
         idPedido: 154,
         fecha: '10-01-2024',
+        nombrePaciente: "Fernanda Casas Cruz",
         detalles: {
           producto1: {
             nombre: 'Aceite Anticaida',
@@ -95,6 +97,7 @@ const Devoluciones = () => {
       }, {
         idPedido: 153,
         fecha: '10-01-2024',
+        nombrePaciente: "Pablo García Márquez",
         detalles: {
           producto1: {
             nombre: 'Hojas de lavanda',
@@ -117,7 +120,7 @@ const Devoluciones = () => {
 
   const getSeverity = (order) => {
     switch (order.estado) {
-      case 'Entregada': return 'success';
+      case 'Entregado': return 'success';
       case 'Pendiente': return 'warning';
       default: return null;
     }
@@ -226,7 +229,7 @@ const Devoluciones = () => {
     return (
       <>
         <Button icon="pi pi-check-square" severity="success" label="Validar" onClick={handleButtonClick} />
-        <Button icon="pi pi-trash" severity="danger" onClick={() => confirmarEliminarRegistro(rowData)} label="Eliminar" />
+        {/* <Button icon="pi pi-trash" severity="danger" onClick={() => confirmarEliminarRegistro(rowData)} label="Eliminar" /> */}
       </>
     );
   };
@@ -267,10 +270,11 @@ const Devoluciones = () => {
               <Column selectionMode="multiple" exportable={false} />
               <Column field="idPedido" header="ID Pedido" sortable style={{ minWidth: '12rem', textAlign: "center" }} />
               <Column field="fecha" header="Fecha de la Realización Pedido" sortable style={{ minWidth: '16rem', textAlign: "center" }}> </Column>
+              <Column field="nombrePaciente" header="Nombre del Paciente" sortable style={{ minWidth: '12rem', textAlign: "center" }} />
               <Column field="detalles" header="Productos" body={plantillaProductos} sortable style={{ minWidth: '16rem', textAlign: "center" }} />
               <Column field="total" header="Cantidad Total a Pagar" sortable style={{ minWidth: '16rem', textAlign: "center" }} />
               <Column field="estado" header="Estado del Pedido" body={plantillaEstatus} sortable style={{ minWidth: '16rem', textAlign: "center" }} />
-              <Column header="Validar / Eliminar registro" body={botonesAccion} exportable={false} style={{ minWidth: '20rem', textAlign: "center" }} />
+              <Column header="Pedidos Entregados" body={botonesAccion} exportable={false} style={{ minWidth: '20rem', textAlign: "center" }} />
             </DataTable>
 
             <Dialog

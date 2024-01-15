@@ -20,27 +20,29 @@ const Doctores = () => {
     const [pdfUrl, setPdfUrl] = useState(null);
 
     const vaidacionDoctores = [
-        {
-            nombre: "Oder Olvera Nieto",
-            email: "oderolveradoc@gmail.com",
-            especialidad: "Otorrinolaringólogo",
-            cedulaFile: "cedula.pdf",
-            tituloFile: "TituloProf.pdf"
-        },
+     /*  {
+            nombre: "Marco Antonio García Olvera",
+            email: "docmarcoantoniogar@gmail.com",
+            especialidad: "Nefrólogo",
+            cedulaFile: "CedulaProfesionalMarcoAntonio.pdf",
+            tituloFile: "TituloMarcoMarcoAnotnio.pdf"
+        },*/
         {
             nombre: "Georgina Cruz Luna",
             email: "gaviotacl12@gmail.com",
             especialidad: "Odontólogo",
-            cedulaFile: "C:/Users/gabri/Downloads/XiZhongYao_Triptico.pdf",
-            tituloFile: "C:/Users/gabri/Downloads/XiZhongYao_Triptico.pdf"
+            cedulaFile: "cedula.pdf",
+            tituloFile: "TiTuloProf.pdf"
         },
-        {
-            nombre: "Fernando Ramírez Rosas",
-            email: "docferchoram@gmail.com",
-            especialidad: "Neurólogo",
-            cedulaFile: "C:/Users/gabri/Downloads/XiZhongYao_Triptico.pdf",
-            tituloFile: "C:/Users/gabri/Downloads/XiZhongYao_Triptico.pdf"
-        },
+      /*  {
+            nombre: "Oder Olvera Nieto",
+            email: "oderolveradoc@gmail.com",
+            especialidad: "Otorrinolaringólogo",
+            cedulaFile: "cedulaProfOder.pdf",
+            tituloFile: "TituloProfOder.pdf"
+        },*/
+     
+        
         {
             nombre: "Aranza Jiménez Gutiérrez",
             email: "doc_araara@gmail.com",
